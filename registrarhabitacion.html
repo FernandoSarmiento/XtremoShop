@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Habitaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Estilos para los formularios */
+        .form-container, .reservation-container {
+            width: 48%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Estilo de tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45A049;
+        }
+
+        .menu-button {
+            background-color: #4CAF50;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .menu-button:hover {
+            background-color: #45A049;
+        }
+
+        /* Estilos para formularios */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <h2>Gestión de Habitaciones</h2>
+
+    <div class="container">
+        <!-- Formulario de Registro de Habitaciones -->
+        <div class="form-container">
+            <h3>Registrar / Actualizar Habitación</h3>
+            <form action="registrar_habitacion.php" method="post">
+                <div class="input-group">
+                    <label for="accion">Acción:</label>
+                    <select name="accion" id="accion" required>
+                        <option value="registrar">Registrar</option>
+                        <option value="actualizar">Actualizar</option>
+                    </select>
+                </div>
+
+                <div class="input-group" id="id_habitacion_div" style="display: none;">
+                    <label for="id_habitacion">ID Habitación (Solo para actualizar):</label>
+                    <input type="number" name="id_habitacion" id="id_habitacion">
+                </div>
+
+                <div class="input-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" name="nombre" id="nombre" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="tipo">Tipo:</label>
+                    <input type="text" name="tipo" id="tipo" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="capacidad">Capacidad:</label>
+                    <input type="number" name="capacidad" id="capacidad" required min="1">
+                </div>
+
+                <div class="input-group">
+                    <label for="precio">Precio:</label>
+                    <input type="number" step="0.01" name="precio" id="precio" required min="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="estado">Estado:</label>
+                    <select name="estado" id="estado" required>
+                        <option value="Disponible">Disponible</option>
+                        <option value="Reservada">Reservada</option>
+                        <option value="Ocupada">Ocupada</option>
+                        <option value="Mantenimiento">Mantenimiento</option>
+                    </select>
+                </div>
+
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+
+        <!-- Tabla de Habitaciones -->
+        <div class="table-container">
+            <h3>Habitaciones Registradas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Capacidad</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="habitacionesTabla">
+                    <!-- Datos de las habitaciones se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <button class="menu-button" onclick="window.location.href='index1.html'">Regresar al menú principal</button>
+
+    <script>
+        // Mostrar/ocultar campo de ID según la acción seleccionada
+        document.getElementById("accion").addEventListener("change", function () {
+            var idDiv = document.getElementById("id_habitacion_div");
+            idDiv.style.display = this.value === "actualizar" ? "block" : "none";
+        });
+
+        // Cargar todas las habitaciones al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarHabitaciones();
+        });
+
+        // Cargar habitaciones desde el servidor
+        function cargarHabitaciones() {
+            fetch(`obtener_habitaciones.php`)
+                .then(response => response.json())
+                .then(data => {
+                    const habitacionesTabla = document.getElementById('habitacionesTabla');
+                    habitacionesTabla.innerHTML = '';
+                    data.forEach(habitacion => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${habitacion.Nombre}</td>
+                            <td>${habitacion.Tipo}</td>
+                            <td>${habitacion.Capacidad}</td>
+                            <td>$${Number(habitacion.Precio).toFixed(2)}</td>
+                            <td>${habitacion.Estado}</td>
+                            <td><button onclick="cargarDatosHabitacion(${habitacion.ID_HABITACION})">Editar</button></td>
+                        `;
+                        habitacionesTabla.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error al cargar las habitaciones:', error));
+        }
+
+        // Cargar datos de habitación para edición
+        function cargarDatosHabitacion(id) {
+            fetch(`obtener_habitaciones.php?id=${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const habitacion = data[0];
+                        document.getElementById('accion').value = 'actualizar';
+                        document.getElementById('id_habitacion').value = habitacion.ID_HABITACION;
+                        document.getElementById('nombre').value = habitacion.Nombre;
+                        document.getElementById('tipo').value = habitacion.Tipo;
+                        document.getElementById('capacidad').value = habitacion.Capacidad;
+                        document.getElementById('precio').value = habitacion.Precio;
+                        document.getElementById('estado').value = habitacion.Estado;
+                    } else {
+                        console.error('No se encontró la habitación.');
+                    }
+                })
+                .catch(error => console.error('Error al cargar los datos de la habitación:', error));
+        }
+    </script> 
+</body>
+</html>

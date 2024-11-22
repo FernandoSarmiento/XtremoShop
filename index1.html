@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reservas - Hotel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome para los íconos -->
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        /* Cuadro de título */
+        #title-box {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.0em;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Barra lateral */
+        #sidebar {
+            background-color: #333;
+            width: 80px; /* Ancho fijo */
+            position: fixed;
+            top: 100px; /* Debajo del título */
+            left: 0;
+            height: 90%;
+            overflow-x: hidden;
+            z-index: 1000;
+            padding-top: 20px;
+            border-right: 2px solid #4CAF50;
+            transition: width 0.3s;
+        }
+
+        #sidebar.expanded {
+            width: 350px; /* Ancho expandido */
+        }
+
+        #sidebar a {
+            padding: 16px;
+            text-decoration: none;
+            font-size: 1.2em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        #sidebar a:hover {
+            background-color: #4CAF50;
+        }
+
+        #sidebar a .icon {
+            margin-right: 10px;
+            font-size: 1.5em;
+        }
+
+        #sidebar a .text {
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #sidebar.expanded a .text {
+            opacity: 1;
+        }
+
+        /* Cerrar Sesión */
+        .logout {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+        }
+
+        /* Contenido principal */
+        .content {
+            margin-left: 100px; /* Alineado al ancho de la barra lateral */
+            padding-left: 20px;
+            width: calc(100% - 100px);
+            padding-top: 100px;
+            transition: margin-left 0.3s;
+        }
+
+        /* Ajuste de contenido cuando la barra está expandida */
+        .sidebar-expanded .content {
+            margin-left: 350px; /* Desplazar el contenido para que no quede tapado */
+            width: calc(100% - 350px);
+        }
+
+        /* Cuadros de información */
+        .info-boxes {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 1200px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .info-box {
+            background-color: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 22%;
+            min-width: 220px;
+            box-sizing: border-box;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .info-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .total-sales {
+            background-color: #4CAF50;
+        }
+
+        .reservations {
+            background-color: #2196F3;
+        }
+
+        .users {
+            background-color: #FF9800;
+        }
+
+        .testimonials {
+            background-color: #F44336;
+        }
+
+        /* Responsividad */
+        @media screen and (max-width: 800px) {
+            .info-boxes {
+                flex-direction: column;
+                gap: 15px;
+                padding: 0;
+            }
+
+            .info-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cuadro de título -->
+    <div id="title-box">
+        <h1>Sistema de Reservas - Hotel</h1>
+    </div>
+
+    <!-- Barra lateral -->
+    <div id="sidebar">
+        <a href="reservas.html">
+            <span class="icon"><i class="fas fa-bed"></i></span>
+            <span class="text">Reservas de Habitaciones</span>
+        </a>
+        <a href="registroclientes.html">
+            <span class="icon"><i class="fas fa-user"></i></span>
+            <span class="text">Registro de Clientes</span>
+        </a>
+        <a href="registrarhabitacion.html">
+            <span class="icon"><i class="fas fa-door-open"></i></span>
+            <span class="text">Registro de Habitaciones</span>
+        </a>
+        <a href="reportes.html">
+            <span class="icon"><i class="fas fa-chart-line"></i></span>
+            <span class="text">Reportes</span>
+        </a>
+        <a href="pago.html">
+            <span class="icon"><i class="fas fa-credit-card"></i></span>
+            <span class="text">Pago</span>
+        </a>
+        <a href="index.html" class="logout">
+            <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+            <span class="text">Salir</span>
+        </a>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="content">
+        <!-- Cuadros de información -->
+        <div class="info-boxes">
+            <div class="info-box total-sales">
+                <h3>$10,457,850</h3>
+                <p>VENTAS TOTALES</p>
+            </div>
+            <div class="info-box reservations">
+                <h3>18</h3>
+                <p>RESERVAS</p>
+            </div>
+            <div class="info-box users">
+                <h3>8</h3>
+                <p>USUARIOS</p>
+            </div>
+            <div class="info-box testimonials">
+                <h3>17</h3>
+                <p>TESTIMONIOS</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const body = document.body;
+
+        sidebar.addEventListener('mouseenter', () => {
+            sidebar.classList.add('expanded');
+            body.classList.add('sidebar-expanded');
+        });
+
+        sidebar.addEventListener('mouseleave', () => {
+            sidebar.classList.remove('expanded');
+            body.classList.remove('sidebar-expanded');
+        });
+    </script>
+</body>
+</html>

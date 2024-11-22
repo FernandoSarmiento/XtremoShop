@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas de Reservas</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        p {
+            text-align: center;
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        /* Barra de navegación */
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: #4CAF50;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            background-color: #388e3c;
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            gap: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar, .main {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar {
+            width: 300px;
+        }
+        .main {
+            flex: 3;
+        }
+
+        /* Formulario */
+        form {
+            display: grid;
+            gap: 15px;
+        }
+
+        form h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="date"],
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #4CAF50;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .actions button {
+            flex: 1;
+            padding: 12px;
+            font-size: 1em;
+            color: #ffffff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .actions button:hover {
+            background-color: #388e3c;
+        }
+
+        /* Tabla de habitaciones */
+        .main h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 10px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        /* Asegura que los formularios tengan el mismo estilo siempre */
+        .form-section {
+            display: none;
+            width: 100%;
+        }
+
+        .form-section.active {
+            display: block;
+            width: 100%;
+        }
+
+        /* Estilos específicos de contenedores para asegurar márgenes y espacio */
+        .sidebar, .main {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            
+        }
+
+        /* Media Queries para pantallas pequeñas */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+            }
+
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .main {
+                width: 100%;
+            }
+
+            /* Estilo de los botones */
+            .actions button {
+                font-size: 0.9em;
+            }
+        }
+        /* Media Queries para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 1.5em;
+            }
+
+            p {
+                font-size: 1em;
+            }
+
+            .navbar a {
+                padding: 8px 12px;
+            }
+
+            .container {
+                gap: 10px;
+            }
+
+            .actions button {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>Reservas</h2>
+    <p>Gestión de las reservas de habitaciones. Aquí podrás ver habitaciones vacías y reservadas.</p>
+    
+    <!-- Barra de navegación -->
+    <div class="navbar">
+        <a href="#" onclick="mostrarFormulario('registrar')">Registrar Reserva</a>
+        <a href="#" onclick="mostrarFormulario('entrada')">Registrar Entrada</a>
+        <a href="#" onclick="mostrarFormulario('salida')">Registrar Salida</a>
+        <a href="#" onclick="mostrarFormulario('cancelar')">Cancelar Reserva</a>
+    </div>
+
+    <div class="container">
+        <!-- Barra lateral con formularios -->
+        <div class="sidebar">
+
+            <div id="entrada" class="form-section">
+                <form action="registrar_reserva.php" method="POST">
+                    <h3>Registrar Entrada</h3>
+                    <div class="form-group">
+                        <label for="id_reserva_entrada">ID de la Reserva:</label>
+                        <input type="number" id="id_reserva_entrada" name="id_reserva" required>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" name="accion" value="entrada">Registrar Entrada</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="salida" class="form-section">
+                <form action="registrar_reserva.php" method="POST">
+                    <h3>Registrar Salida</h3>
+                    <div class="form-group">
+                        <label for="id_reserva_salida">ID de la Reserva:</label>
+                        <input type="number" id="id_reserva_salida" name="id_reserva" required>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" name="accion" value="salida">Registrar Salida</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="cancelar" class="form-section">
+                <form action="registrar_reserva.php" method="POST">
+                    <h3>Cancelar Reserva</h3>
+                    <div class="form-group">
+                        <label for="id_reserva_cancelar">ID de la Reserva:</label>
+                        <input type="number" id="id_reserva_cancelar" name="id_reserva" required>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" name="accion" value="cancelar">Cancelar Reserva</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="container"></div>
+            <div id="registrar" class="form-section active">
+                <form action="registrar_reserva.php" method="POST">
+                    <h3>Registrar Nueva Reserva</h3>
+                    <div class="form-group">
+                        <label for="FechaReserva">Fecha de Reserva:</label>
+                        <input type="date" id="FechaReserva" name="FechaReserva" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ModoReserva">Modo de Reserva:</label>
+                        <select id="ModoReserva" name="ModoReserva" required>
+                            <option value="Anticipada">Anticipada</option>
+                            <option value="Simple">Simple</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="MetodoPago">Método de Pago:</label>
+                        <select id="MetodoPago" name="MetodoPago">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="CLIENTE_DNI">DNI del Cliente:</label>
+                        <input type="text" id="CLIENTE_DNI" name="CLIENTE_DNI" maxlength="10" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="HABITACION_ID">ID de la Habitación:</label>
+                        <input type="number" id="HABITACION_ID" name="HABITACION_ID" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="USUARIO_ID">ID del Usuario:</label>
+                        <input type="number" id="USUARIO_ID" name="USUARIO_ID" required>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" name="accion" value="reservar">Registrar Reserva</button>
+                        <button type="button" onclick="window.location.href='index1.html'">Regresar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="container lista-habitaciones">
+            <h3>Lista de Habitaciones</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Habitación</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Capacidad</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="habitaciones">
+                    <!-- Las habitaciones se agregarán aquí dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="container lista-reservas">
+            <h3>Lista de Reservas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Reserva</th>
+                        <th>Estado</th>
+                        <th>Fecha  Reserva</th>
+                        <th>DNI  Cliente</th>
+                        <th>ID  Habitación</th>
+                        <th>ID  Usuario</th>
+                        <th>Monto Total</th>
+                    </tr>
+                </thead>
+                <tbody id="reservas">
+                    <!-- Las reservas se agregarán aquí dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+        
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                fetchHabitaciones();
+                fetchReservas();
+                mostrarFormulario('registrar');
+            });
+        
+            function fetchHabitaciones() {
+                fetch('obtener_habitaciones.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const tbody = document.getElementById('habitaciones');
+                        tbody.innerHTML = '';
+        
+                        if (Array.isArray(data)) {
+                            data.forEach(habitacion => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${habitacion.ID_HABITACION}</td>
+                                    <td>${habitacion.Nombre}</td>
+                                    <td>${habitacion.Tipo}</td>
+                                    <td>${habitacion.Capacidad}</td>
+                                    <td>${habitacion.Precio}</td>
+                                    <td>${habitacion.Estado}</td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+                        } else {
+                            console.error('Error: ', data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error al cargar las habitaciones:', error));
+            }
+        
+            function fetchReservas() {
+                fetch('obtener_reservas.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const tbody = document.getElementById('reservas');
+                        tbody.innerHTML = '';
+
+                        if (Array.isArray(data)) {
+                            data.forEach(reserva => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${reserva.ID_RESERVA}</td>
+                                    <td>${reserva.Estado}</td>
+                                    <td>${reserva.FechaReserva}</td>
+                                    <td>${reserva.CLIENTE_DNI}</td>
+                                    <td>${reserva.HABITACION_ID}</td>
+                                    <td>${reserva.USUARIO_ID}</td>
+                                    <td>${reserva.MontoTotal}</td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+                        } else {
+                            console.error('Error: ', data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error al cargar las reservas:', error));
+            }
+
+        
+            function mostrarFormulario(formulario) {
+                const secciones = document.querySelectorAll('.form-section');
+                secciones.forEach(section => section.classList.remove('active'));
+                document.getElementById(formulario).classList.add('active');
+
+                const listaHabitaciones = document.querySelector('.lista-habitaciones');
+                listaHabitaciones.style.display = formulario === 'registrar' ? 'block' : 'none';
+
+                const listaReservas = document.querySelector('.container.lista-reservas');
+                listaReservas.style.display = formulario === 'registrar' ? 'none' : 'block';
+            }
+        </script>        
+</body>
+</html>
